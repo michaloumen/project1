@@ -1,5 +1,5 @@
 //const meuCarro = {posx: 0, posy: 0};
-const myGameArea = {frames: 0, heigth: 700, lastObst: 'S'};
+const myGameArea = {frames: 0, heigth: 700, lastObst: 'S', lastBack: '0'};
 
 const myPlane = {img: 'images/plane.png', width: 50, height: 100, posX: 225, posY: 590};
 const myTank = {img: 'images/tank.png', width: 20, height: 30, posX: 430, posY: 0};
@@ -10,7 +10,7 @@ const myShipR = {img: 'images/shipR.png', width: 75, height: 45, posX: 0, posY: 
 const myFire =  {img: 'images/fire.png', width: 50, height: 103, posX: 0, posY: 0};
 //const myShip = {img: 'images/tank.png', width: 20, height: 30, posX: 430, posY: 0};
 
-
+const myExplosion =  {img: 'images/explosion.png', width: 50, height: 70, posX: 0, posY: 0};
 //meuCarro.posx = 225;
 //meuCarro.posy = 590;
 
@@ -18,6 +18,16 @@ let posyPista = 0;
 //const ctx = {};
 let imageRoad = new Image();
 imageRoad.src = 'images/road.png'; //500 x 700
+
+let imageRoad2 = new Image();
+imageRoad2.src = 'images/road2.png'; //500 x 700
+
+let imageRoad3 = new Image();
+imageRoad3.src = 'images/road3.png'; //500 x 700
+
+let imageRoad4 = new Image();
+imageRoad4.src = 'images/road4.png'; //500 x 700
+
 
 let imgTank = new Image();
 imgTank.src = myTank.img;
@@ -34,31 +44,36 @@ imgHeliR.src = myHeliR.img;
 let imgFire = new Image();
 imgFire.src = myFire.img;
 
+let imgExplosion = new Image();
+imgExplosion.src = myExplosion.img;
+
 let ctx = {};
 
 let interval = 0;
 
-
+let contExpl = 0;
+const myCrush = [];
 const myObstacles = [];
 const myFires = [];
 
 class Component {
-  constructor(width, height, x, y, img) {
+  constructor(width, height, x, y, img, typeObj) {
     this.width = width;
     this.height = height;
     this.x = x;
     this.y = y;
     this.img = img;
+    this.typeObj = typeObj;
 
-    // new speed properties
-    this.speedX = 0;
-    this.speedY = 0;  
+    // // new speed properties
+    // this.speedX = 0;
+    // this.speedY = 0;  
   }
 
-  newPos() {
-    this.x += this.speedX;
-    this.y += this.speedY;
-  }
+  // newPos() {
+  //   this.x += this.speedX;
+  //   this.y += this.speedY;
+  // }
 
   update() {
     //const ctx = myGameArea.context;
@@ -80,10 +95,19 @@ class Component {
   bottom() {
     return this.y + this.height;
   }
- 
+
 //   crashWith(obstacle) {
 //     return !(this.bottom() < obstacle.top() || this.top() > obstacle.bottom() || this.right() < obstacle.left() || this.left() > obstacle.right());
 //   }  
+};
+
+class Crush extends Component {
+  constructor(width, height, x, y, img, typeObj, cont, indexObj, indexFire){
+    super(width, height, x, y, img, typeObj);
+    this.cont = cont;
+    this.indexObj = indexObj;
+    this.indexFire = indexFire;
+  }
 };
 
 
@@ -94,10 +118,13 @@ window.onload = () => {
 
   function startGame() {
 
+    let btnStar = document.getElementById('start-button');
+    btnStar.blur();
+
     ctx = document.getElementById('canvas').getContext('2d');
 
     ctx.drawImage(imageRoad, 0, 0, 500, 700);
-    ctx.drawImage(imageRoad, 0, 700, 500, 700);
+    ctx.drawImage(imageRoad2, 0, 700, 500, 700);
 
     //ctx.drawImage(imgPlane, meuCarro.posx, meuCarro.posy,41, 55);
     //ctx.drawImage(imgPlane, meuCarro.posx, meuCarro.posy,50, 29);
@@ -107,15 +134,34 @@ window.onload = () => {
     //console.log(meuCarro['posx']);
     //console.log(meuCarro['posy']);
     //atualizaDados();
-    interval = setInterval(updateGameArea, 20);
+    //if (interval===0){
+      interval = setInterval(updateGameArea, 20);
+    //}
   }
 };
 
 function atualizaDados(){
   ctx.clearRect(0, 0, 500, 700);
+  
+  posyPista += 1;
 
-  ctx.drawImage(imageRoad, 0, posyPista, 500, 700);
-  ctx.drawImage(imageRoad, 0, posyPista-700, 500, 700);
+  if (myGameArea.lastBack==='1'){
+    ctx.drawImage(imageRoad2, 0, posyPista, 500, 700);
+    ctx.drawImage(imageRoad2, 0, posyPista-700, 500, 700);  
+  }else {
+    ctx.drawImage(imageRoad, 0, posyPista, 500, 700);
+    ctx.drawImage(imageRoad, 0, posyPista-700, 500, 700);
+  }
+
+
+  if (posyPista>700){
+    posyPista = 0;
+    if (myGameArea.lastBack==='0'){
+      myGameArea.lastBack='1';
+    }else {
+      myGameArea.lastBack='2';
+    }
+  }
 
   ctx.drawImage(imgPlane, myPlane.posX, myPlane.posY, myPlane.width, myPlane.height);
 
@@ -139,12 +185,76 @@ function updateGameArea(){
   updateObstacles(); 
 
   updateFire();
+
+  updateCrush();
+
+}
+
+function updateCrush(){
+    for(i=0; i<myCrush.length;i++){
+      if (myCrush[i].cont <= 20){
+        myCrush[i].y += 1;
+        myCrush[i].update(); 
+        myCrush[i].cont += 1;
+      }else {
+        myCrush.splice(i,1);
+      }
+    }  
 }
 function updateFire(){
+
+    let crushObj = false;
     for (i = 0; i < myFires.length; i++) {
-        myFires[i].y -= 1;
-        myFires[i].update();
-      }      
+        //Varre os obstaculos para saber se estão na mesma posição x e y do fire
+        for (j = 0; j < myObstacles.length; j++) {
+          //myObstacles[i].y += 1;
+          //myObstacles[i].update();
+          //se o y estiver na mesma coordenada verifica a posição x se está dentro do objeto
+          crushObj = false;
+          if (myObstacles[j].y >= (myFires[i].y-myFires[i].height+50)){
+            //if (myObstacles[j].x === myFires[i].x){
+            console.log('igual y');
+            if ((myFires[i].x+20)  >= myObstacles[j].x  && myFires[i].x+30  <= (myObstacles[j].x + myObstacles[j].width)){
+
+              console.log('colidiu');
+              crushObj = true; 
+            }
+          }
+
+          if (!crushObj){
+            if (myFires[i].y > 0){
+              myFires[i].y -= 1;
+              myFires[i].update();    
+            }else {
+              myFires.splice(i,1);
+            }
+            
+          }else {
+            myCrush.push(new Crush(myExplosion.width, myExplosion.height, myObstacles[j].x, myObstacles[j].y, imgExplosion, 'E', 0, j, i));
+
+            myObstacles.splice(j,1);
+            myFires.splice(i,1);
+            //myCrush[0].update();
+            //console.log('colidiu');
+          }
+        }  
+    }      
+    
+    // for(i=0; i<myCrush.length;i++){
+    //   if (myCrush[i].cont <= 20){
+    //     myCrush[i].y += 1;
+    //     myCrush[i].update(); 
+    //     myCrush[i].cont += 1;
+    //   }else {
+    //     if (myCrush[i].indexObj > -1){
+    //       myObstacles.splice(myCrush[i].indexObj,1);
+    //       myCrush[i].indexObj = -1;
+    //       myFires.splice(myCrush[i].indexFire,1);
+    //     }
+    //     //myCrush[i].cont = 0;
+    //   }
+    // }
+
 }
 
 function updateObstacles() {
@@ -161,10 +271,10 @@ function updateObstacles() {
     //let gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
     //myObstacles.push(new Component(width, 20, '#870007', 0, y));
     if (myGameArea.lastObst==='N'){
-        myObstacles.push(new Component(myShipR.width, myShipR.height, posX, y, imgShipR));
+        myObstacles.push(new Component(myShipR.width, myShipR.height, posX, y, imgShipR, 'S'));
         myGameArea.lastObst='S';
     }else{
-        myObstacles.push(new Component(myHeliR.width, myHeliR.height, posX, y, imgHeliR));
+        myObstacles.push(new Component(myHeliR.width, myHeliR.height, posX, y, imgHeliR, 'H'));
         myGameArea.lastObst='N';
     }
     
@@ -177,10 +287,7 @@ function updateObstacles() {
     myObstacles[i].y += 1;
     myObstacles[i].update();
   }  
-
 }
-
-
 
 document.addEventListener('keydown', (e) => {
   switch (e.keyCode) {
@@ -190,7 +297,7 @@ document.addEventListener('keydown', (e) => {
       //   player.speedX = 0;
       //   return ;
       // }
-      myPlane.posX -= 1;
+      myPlane.posX -= 4;
       atualizaDados();
       break;
     case 39: // right arrow
@@ -199,13 +306,11 @@ document.addEventListener('keydown', (e) => {
       //   player.speedX = 0;
       //   return;
       // }
-      myPlane.posX += 1;
+      myPlane.posX += 4;
       atualizaDados();
       break;
-    case 32:
+    case 32: //space bar
         //console.log(e.keyCode);
-        myFires.push(new Component(myFire.width, myFire.height, myPlane.posX, myPlane.posY-100, imgFire));
-
-
+        myFires.push(new Component(myFire.width, myFire.height, myPlane.posX, myPlane.posY-100, imgFire, 'F'));
   }
 });
