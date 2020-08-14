@@ -1,11 +1,12 @@
 //const meuCarro = {posx: 0, posy: 0};
 const myGameArea = {frames: 0, heigth: 700, lastObst: 'S', lastBack: '0'};
 
-const myPlane = {img: 'images/plane.png', width: 50, height: 100, posX: 225, posY: 590};
+const myPlane = {img: 'images/plane.png', width: 50, height: 100, posX: 225, posY: 590, fuel: 5000};
 const myTank = {img: 'images/tank.png', width: 20, height: 30, posX: 430, posY: 0};
 const myHeliR = {img: 'images/heliR.png', width: 75, height: 75, posX: 430, posY: 0};
-//const myHeli = {img: 'images/tank.png', width: 20, height: 30, posX: 430, posY: 0};
+const myHeliL = {img: 'images/heliL.png', width: 75, height: 75, posX: 430, posY: 0};
 const myShipR = {img: 'images/shipR.png', width: 75, height: 45, posX: 0, posY: 0};
+const myShipL = {img: 'images/shipL.png', width: 75, height: 45, posX: 0, posY: 0};
 
 const myFire =  {img: 'images/fire.png', width: 50, height: 103, posX: 0, posY: 0};
 //const myShip = {img: 'images/tank.png', width: 20, height: 30, posX: 430, posY: 0};
@@ -15,6 +16,7 @@ const myExplosion =  {img: 'images/explosion.png', width: 50, height: 70, posX: 
 //meuCarro.posy = 590;
 
 let posyPista = 0;
+let intervaloTank = Math.floor(Math.random() * (3000 - 1000 + 1) + 1000);
 //const ctx = {};
 let imageRoad = new Image();
 imageRoad.src = 'images/road.png'; //500 x 700
@@ -38,8 +40,14 @@ imgPlane.src = myPlane.img;
 let imgShipR = new Image();
 imgShipR.src = myShipR.img;
 
+let imgShipL = new Image();
+imgShipL.src = myShipL.img;
+
 let imgHeliR = new Image();
 imgHeliR.src = myHeliR.img;
+
+let imgHeliL = new Image();
+imgHeliL.src = myHeliL.img;
 
 let imgFire = new Image();
 imgFire.src = myFire.img;
@@ -55,6 +63,7 @@ let contExpl = 0;
 const myCrush = [];
 const myObstacles = [];
 const myFires = [];
+const myTanks = [];
 
 class Component {
   constructor(width, height, x, y, img, typeObj) {
@@ -145,38 +154,39 @@ function atualizaDados(){
   
   posyPista += 1;
 
-  if (myGameArea.lastBack==='1'){
-    ctx.drawImage(imageRoad2, 0, posyPista, 500, 700);
-    ctx.drawImage(imageRoad2, 0, posyPista-700, 500, 700);  
-  }else {
+  // if (myGameArea.lastBack==='1'){
+  //   ctx.drawImage(imageRoad2, 0, posyPista, 500, 700);
+  //   ctx.drawImage(imageRoad2, 0, posyPista-700, 500, 700);  
+  // }else {
     ctx.drawImage(imageRoad, 0, posyPista, 500, 700);
     ctx.drawImage(imageRoad, 0, posyPista-700, 500, 700);
-  }
+  // }
 
 
   if (posyPista>700){
     posyPista = 0;
-    if (myGameArea.lastBack==='0'){
-      myGameArea.lastBack='1';
-    }else {
-      myGameArea.lastBack='2';
-    }
+  //   if (myGameArea.lastBack==='0'){
+  //     myGameArea.lastBack='1';
+  //   }else {
+  //     myGameArea.lastBack='2';
+  //   }
   }
 
   ctx.drawImage(imgPlane, myPlane.posX, myPlane.posY, myPlane.width, myPlane.height);
 
-  ctx.drawImage(imgTank, myTank.posX, myTank.posY, myTank.width, myTank.height);
+  //ctx.drawImage(imgTank, myTank.posX, myTank.posY, myTank.width, myTank.height);
+ 
 
-  myTank.posY += 1;
+  // myTank.posY += 1;
 
-  if (myTank.posY >= 900){
-      myTank.posY = 0;
-      if (myTank.posX === 430){
-        myTank.posX = 50;
-      }else {
-        myTank.posX = 430;
-      }
-    };
+  // if (myTank.posY >= 900){
+  //     myTank.posY = 0;
+  //     if (myTank.posX === 430){
+  //       myTank.posX = 50;
+  //     }else {
+  //       myTank.posX = 430;
+  //     }
+  //   };
 }
 
 function updateGameArea(){
@@ -188,6 +198,98 @@ function updateGameArea(){
 
   updateCrush();
 
+  updateFuel();
+
+  updateTank();
+
+  updatePlaneCrush();
+}
+
+function updatePlaneCrush(){
+
+}
+
+function updateTank(){
+
+  if (myGameArea.frames % intervaloTank === 0) {
+
+    intervaloTank = Math.floor(Math.random() * (3000 - 1000 + 1) + 1000);
+    let minWidth = 50;
+    let maxWidth = 430;
+    let posX = Math.floor(Math.random() * (maxWidth - minWidth + 1) + minWidth);
+    
+    myTanks.push(new Component(myTank.width, myTank.height,posX, 0, imgTank, 'T'));
+
+  }
+
+  let carregouTank = false;
+  for (i = 0; i < myTanks.length; i++) {
+
+    if (myTanks[i].y <=700){
+      //(myObstacles[j].y >= (myFires[i].y-myFires[i].height+50))
+      if (myTanks[i].y >= myPlane.posY-myPlane.height+65){
+        if (myPlane.posX+10 >= myTanks[i].x  && myPlane.posX <= myTanks[i].x+myTanks[i].width+100){
+        //if ((myFires[i].x+20)  >= myObstacles[j].x  && myFires[i].x+30  <= (myObstacles[j].x + myObstacles[j].width)){
+          //console.log('carregou');
+          carregouTank = true;
+          myTanks.splice(i,1);
+          if (myPlane.fuel <= 4000){
+            myPlane.fuel += 1000;
+          }else {
+            myPlane.fuel = 5000;
+          }          
+        }
+      }
+      if (!carregouTank){
+        myTanks[i].y += 1;
+        myTanks[i].update();    
+      }
+    }else {
+      myTanks.splice(i,1);
+    }
+  } 
+}
+
+function updateFuel(){
+  //ctx.fillStyle = black;
+  //ctx.fillRect(450, 0, 75, 50);
+  ctx.beginPath();
+  ctx.rect(395, 10, 100, 25);
+  ctx.fillStyle = 'white';
+  ctx.fill();
+  ctx.lineWidth = 3;
+  ctx.stroke(); 
+
+  ctx.beginPath();
+  if (myPlane.fuel > 0) {
+    ctx.rect(395, 10, myPlane.fuel/50, 25);
+    if (myPlane.fuel < 1250) {
+      //console.log('red');
+      ctx.fillStyle = 'red';
+    }else {
+      ctx.fillStyle = 'yellow';
+    }
+  }
+  //}else{
+   // ctx.fillStyle = 'yellow';
+  ctx.fill();
+  ctx.lineWidth = 0;
+  ctx.strokeStyle = 'black';
+  ctx.stroke();  
+
+  ctx.font = "normal 20px Arial";
+  ctx.fillStyle = 'black';
+  ctx.fillText('Fuel', 350, 30);
+  ctx.drawImage(imgTank, 325, 8, myTank.width, myTank.height);
+  ctx.fillStyle = 'black';
+  ctx.fillText('E', 398, 30);
+  ctx.fillText('F', 477, 30);
+
+  if (myPlane.fuel>0){
+    myPlane.fuel -=1;
+  }else {
+    //chamar game over
+  }
 }
 
 function updateCrush(){
@@ -213,10 +315,10 @@ function updateFire(){
           crushObj = false;
           if (myObstacles[j].y >= (myFires[i].y-myFires[i].height+50)){
             //if (myObstacles[j].x === myFires[i].x){
-            console.log('igual y');
+            //console.log('igual y');
             if ((myFires[i].x+20)  >= myObstacles[j].x  && myFires[i].x+30  <= (myObstacles[j].x + myObstacles[j].width)){
 
-              console.log('colidiu');
+              //console.log('colidiu');
               crushObj = true; 
             }
           }
@@ -271,10 +373,11 @@ function updateObstacles() {
     //let gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
     //myObstacles.push(new Component(width, 20, '#870007', 0, y));
     if (myGameArea.lastObst==='N'){
-        myObstacles.push(new Component(myShipR.width, myShipR.height, posX, y, imgShipR, 'S'));
+        //myObstacles.push(new Component(myShipR.width, myShipR.height, posX, y, imgShipR, 'S'));
+        myObstacles.push(new Component(myShipR.width, myShipR.height, posX, y, (posX >220  ? imgShipR : imgShipL), 'S'));
         myGameArea.lastObst='S';
     }else{
-        myObstacles.push(new Component(myHeliR.width, myHeliR.height, posX, y, imgHeliR, 'H'));
+        myObstacles.push(new Component(myHeliR.width, myHeliR.height, posX, y, (posX >220  ? imgHeliR : imgHeliL), 'H'));
         myGameArea.lastObst='N';
     }
     
