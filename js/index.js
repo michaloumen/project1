@@ -1,8 +1,8 @@
 //const meuCarro = {posx: 0, posy: 0};
 //statusGame: E - Executando / P - Parado
-const myGameArea = {frames: 0, heigth: 700, lastObst: 'S', lastBack: '0', statusGame: 'E', sumHeli: 0, sumShip: 0, maxHeli: 4, maxShip: 4};
+const myGameArea = {frames: 0, heigth: 700, lastObst: 'S', lastBack: '0', statusGame: 'E', sumHeli: 0, sumShip: 0, maxHeli: 10, maxShip: 10};
 
-const myPlane = {img: 'images/plane.png', width: 50, height: 100, posX: 225, posY: 590, fuel: 5000};
+const myPlane = {img: 'images/plane.png', width: 50, height: 100, posX: 225, posY: 590, fuel: 5000, speed: 4, maxFuel: 5000};
 const myTank = {img: 'images/tank.png', width: 20, height: 30, posX: 430, posY: 0};
 const myHeliR = {img: 'images/heliR.png', width: 75, height: 75, posX: 430, posY: 0};
 const myHeliL = {img: 'images/heliL.png', width: 75, height: 75, posX: 430, posY: 0};
@@ -172,28 +172,10 @@ function atualizaDados(){
 
   if (posyPista>700){
     posyPista = 0;
-  //   if (myGameArea.lastBack==='0'){
-  //     myGameArea.lastBack='1';
-  //   }else {
-  //     myGameArea.lastBack='2';
-  //   }
   }
 
   ctx.drawImage(imgPlane, myPlane.posX, myPlane.posY, myPlane.width, myPlane.height);
 
-  //ctx.drawImage(imgTank, myTank.posX, myTank.posY, myTank.width, myTank.height);
- 
-
-  // myTank.posY += 1;
-
-  // if (myTank.posY >= 900){
-  //     myTank.posY = 0;
-  //     if (myTank.posX === 430){
-  //       myTank.posX = 50;
-  //     }else {
-  //       myTank.posX = 430;
-  //     }
-  //   };
 }
 
 function updateGameArea(){
@@ -224,8 +206,8 @@ function updateScore(){
   ctx.textAlign = 'left';
 
   // verifica se conseguei atingir o objetivo
-  console.log(myGameArea.maxShip/2);
-  console.log(myGameArea.maxHeli/2);
+  //console.log(myGameArea.maxShip/2);
+  //console.log(myGameArea.maxHeli/2);
   if (myGameArea.sumShip >= myGameArea.maxShip/2 && myGameArea.sumHeli >= myGameArea.maxHeli/2 && interval2 ===0){
     interval2 = setInterval(updateGameArea, 10);
   }
@@ -234,13 +216,6 @@ function updateScore(){
     //Ganhou 
     updateFimJogo('W');
   }
-
-
-
-  //ctx.drawImage(imgTank, 325, 8, myTank.width, myTank.height);
-  //ctx.fillStyle = 'black';
-  //ctx.fillText('E', 398, 30);
-  //ctx.fillText('F', 477, 30);  
 }
 
 function updatePlaneCrush(){
@@ -290,6 +265,9 @@ function updateTank(){
           myTanks.splice(i,1);
           if (myPlane.fuel <= 4000){
             myPlane.fuel += 1000;
+            if (myPlane.fuel > (myPlane.maxFuel*.25)){
+              myPlane.speed = 4;
+            }
           }else {
             myPlane.fuel = 5000;
           }          
@@ -318,9 +296,10 @@ function updateFuel(){
   ctx.beginPath();
   if (myPlane.fuel > 0) {
     ctx.rect(395, 10, myPlane.fuel/50, 25);
-    if (myPlane.fuel < 1250) {
+    if (myPlane.fuel < (myPlane.maxFuel*.25)) {
       //console.log('red');
       ctx.fillStyle = 'red';
+      myPlane.speed = 2;
     }else {
       ctx.fillStyle = 'yellow';
     }
@@ -486,7 +465,7 @@ document.addEventListener('keydown', (e) => {
         //   player.speedX = 0;
         //   return ;
         // }
-        myPlane.posX -= 4;
+        myPlane.posX -= myPlane.speed;
         atualizaDados();
         break;
       case 39: // right arrow
@@ -495,7 +474,7 @@ document.addEventListener('keydown', (e) => {
         //   player.speedX = 0;
         //   return;
         // }
-        myPlane.posX += 4;
+        myPlane.posX += myPlane.speed;
         atualizaDados();
         break;
       case 32: //space bar
