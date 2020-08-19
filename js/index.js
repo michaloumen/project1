@@ -1,5 +1,6 @@
 //const meuCarro = {posx: 0, posy: 0};
-const myGameArea = {frames: 0, heigth: 700, lastObst: 'S', lastBack: '0'};
+//statusGame: E - Executando / P - Parado
+const myGameArea = {frames: 0, heigth: 700, lastObst: 'S', lastBack: '0', statusGame: 'E', sumHeli: 0, sumShip: 0, maxHeli: 4, maxShip: 4};
 
 const myPlane = {img: 'images/plane.png', width: 50, height: 100, posX: 225, posY: 590, fuel: 5000};
 const myTank = {img: 'images/tank.png', width: 20, height: 30, posX: 430, posY: 0};
@@ -10,6 +11,11 @@ const myShipL = {img: 'images/shipL.png', width: 75, height: 45, posX: 0, posY: 
 
 const myFire =  {img: 'images/fire.png', width: 50, height: 103, posX: 0, posY: 0};
 //const myShip = {img: 'images/tank.png', width: 20, height: 30, posX: 430, posY: 0};
+let imgGameOver = new Image();
+imgGameOver.src = 'images/gameover.png';
+
+let imgGameWin = new Image();
+imgGameWin.src = 'images/winner.png';
 
 const myExplosion =  {img: 'images/explosion.png', width: 50, height: 70, posX: 0, posY: 0};
 //meuCarro.posx = 225;
@@ -58,6 +64,7 @@ imgExplosion.src = myExplosion.img;
 let ctx = {};
 
 let interval = 0;
+let interval2 = 0;
 
 let contExpl = 0;
 const myCrush = [];
@@ -203,10 +210,61 @@ function updateGameArea(){
   updateTank();
 
   updatePlaneCrush();
+
+  updateScore();
+}
+
+function updateScore(){
+  ctx.font = "normal 20px Arial";
+  ctx.fillStyle = 'black';
+  ctx.textAlign = 'right';
+  ctx.fillText(`Sum Ship: ${myGameArea.sumShip}`, 230, 30);
+  ctx.fillText(`Sum Helicopter: ${myGameArea.sumHeli}`, 230, 60);
+
+  ctx.textAlign = 'left';
+
+  // verifica se conseguei atingir o objetivo
+  console.log(myGameArea.maxShip/2);
+  console.log(myGameArea.maxHeli/2);
+  if (myGameArea.sumShip >= myGameArea.maxShip/2 && myGameArea.sumHeli >= myGameArea.maxHeli/2 && interval2 ===0){
+    interval2 = setInterval(updateGameArea, 10);
+  }
+
+  if (myGameArea.sumShip >= myGameArea.maxShip && myGameArea.sumHeli >= myGameArea.maxHeli ){
+    //Ganhou 
+    updateFimJogo('W');
+  }
+
+
+
+  //ctx.drawImage(imgTank, 325, 8, myTank.width, myTank.height);
+  //ctx.fillStyle = 'black';
+  //ctx.fillText('E', 398, 30);
+  //ctx.fillText('F', 477, 30);  
 }
 
 function updatePlaneCrush(){
 
+  let carregouTank = false;
+  for (i = 0; i < myObstacles.length; i++) {
+
+    if (myObstacles[i].y <=700){
+      //(myObstacles[j].y >= (myFires[i].y-myFires[i].height+50))
+      if (myObstacles[i].y >= myPlane.posY-myPlane.height+45){
+        if (myPlane.posX+20 >= myObstacles[i].x  && myPlane.posX <= myObstacles[i].x+myObstacles[i].width-10){
+        
+          //console.log('bateu');
+          updateFimJogo('L');
+          
+          myCrush.push(new Crush(myExplosion.width, myExplosion.height, myPlane.posX, myPlane.posY, imgExplosion, 'E', 0, 0, 0));
+          myCrush[myCrush.length-1].update();
+
+        }
+      }
+    }
+  }
+  //se bater em algum obstaculo chama a rotina de fim de jogo
+  //updateFimJogo('L');
 }
 
 function updateTank(){
@@ -226,11 +284,8 @@ function updateTank(){
   for (i = 0; i < myTanks.length; i++) {
 
     if (myTanks[i].y <=700){
-      //(myObstacles[j].y >= (myFires[i].y-myFires[i].height+50))
       if (myTanks[i].y >= myPlane.posY-myPlane.height+65){
-        if (myPlane.posX+10 >= myTanks[i].x  && myPlane.posX <= myTanks[i].x+myTanks[i].width+100){
-        //if ((myFires[i].x+20)  >= myObstacles[j].x  && myFires[i].x+30  <= (myObstacles[j].x + myObstacles[j].width)){
-          //console.log('carregou');
+        if (myPlane.posX+30 >= myTanks[i].x  && myPlane.posX <= myTanks[i].x+myTanks[i].width+30){
           carregouTank = true;
           myTanks.splice(i,1);
           if (myPlane.fuel <= 4000){
@@ -289,9 +344,28 @@ function updateFuel(){
     myPlane.fuel -=1;
   }else {
     //chamar game over
+    updateFimJogo('L');
   }
 }
 
+function updateFimJogo(lcTipo){
+  myGameArea.statusGame = 'P';
+
+  clearInterval(interval);
+  clearInterval(interval2);
+  ctx.drawImage(imgGameOver, 10, 100, 500, 423); //500X423
+
+  if (lcTipo==='L'){
+    ctx.font = "bold 60px Arial";
+    ctx.fillStyle = 'red';
+    ctx.fillText('You Lose!!', 100, 450);
+    ctx.strokeStyle = 'black';
+    ctx.strokeText('You Lose!!', 100, 450);
+
+  }else {
+    ctx.drawImage(imgGameWin, 100, 230, 300, 300);
+  }
+}
 function updateCrush(){
     for(i=0; i<myCrush.length;i++){
       if (myCrush[i].cont <= 20){
@@ -334,8 +408,19 @@ function updateFire(){
           }else {
             myCrush.push(new Crush(myExplosion.width, myExplosion.height, myObstacles[j].x, myObstacles[j].y, imgExplosion, 'E', 0, j, i));
 
+            if (myObstacles[j].typeObj==='S'){
+              myGameArea.sumShip += 1;
+            }else {
+              myGameArea.sumHeli += 1;
+            }
+
+
             myObstacles.splice(j,1);
             myFires.splice(i,1);
+            
+            //console.log('Total Ship:'+myGameArea.sumShip);
+            //console.log('Total Heli:'+myGameArea.sumHeli);
+            
             //myCrush[0].update();
             //console.log('colidiu');
           }
@@ -393,27 +478,34 @@ function updateObstacles() {
 }
 
 document.addEventListener('keydown', (e) => {
-  switch (e.keyCode) {
-    case 37: // left arrow
-      // if (player.x <= 0){
-      //   player.x = 0;
-      //   player.speedX = 0;
-      //   return ;
-      // }
-      myPlane.posX -= 4;
-      atualizaDados();
-      break;
-    case 39: // right arrow
-      // if (player.x >= 450){
-      //   player.x = 450;
-      //   player.speedX = 0;
-      //   return;
-      // }
-      myPlane.posX += 4;
-      atualizaDados();
-      break;
-    case 32: //space bar
-        //console.log(e.keyCode);
-        myFires.push(new Component(myFire.width, myFire.height, myPlane.posX, myPlane.posY-100, imgFire, 'F'));
+  if (myGameArea.statusGame==='E'){
+    switch (e.keyCode) {
+      case 37: // left arrow
+        // if (player.x <= 0){
+        //   player.x = 0;
+        //   player.speedX = 0;
+        //   return ;
+        // }
+        myPlane.posX -= 4;
+        atualizaDados();
+        break;
+      case 39: // right arrow
+        // if (player.x >= 450){
+        //   player.x = 450;
+        //   player.speedX = 0;
+        //   return;
+        // }
+        myPlane.posX += 4;
+        atualizaDados();
+        break;
+      case 32: //space bar
+          //console.log(e.keyCode);
+          myFires.push(new Component(myFire.width, myFire.height, myPlane.posX, myPlane.posY-100, imgFire, 'F'));
+          break;
+      case 84:
+        console.log('teste');
+        interval = setInterval(updateGameArea, 10);
+        break;
+    }
   }
 });
