@@ -388,11 +388,17 @@ function updateCrush(){
 function updateFire(){
 
     let crushObj = false;
+
     for (i = 0; i < myFires.length; i++) {
         //Varre os obstaculos para saber se estão na mesma posição x e y do fire
         for (j = 0; j < myObstacles.length; j++) {
           //se o y estiver na mesma coordenada verifica a posição x se está dentro do objeto
           crushObj = false;
+
+          // if (myFires[i].y === undefined ){
+          //   console.log('myfires' + myFires[i]);
+          // }
+
           if (myObstacles[j].y >= (myFires[i].y-myFires[i].height+50)){
             if ((myFires[i].x+20)  >= myObstacles[j].x  && myFires[i].x+30  <= (myObstacles[j].x + myObstacles[j].width)){
               crushObj = true; 
@@ -430,10 +436,17 @@ function updateObstacles() {
   //console.log(myGameArea.frames);
   if (myGameArea.frames % 240 === 0) {
     let y = 0;
-    let minWidth = 50;
-    let maxWidth = 380;
+
+    //let minWidth = 50 ;
+    let minWidth = myGameArea.limL;
+    //let maxWidth = 380 (500 - 75- 50);
+    let maxWidth = (myGameArea.width - 75 - myGameArea.limR);
     //let width = Math.floor(Math.random() * (maxWidth - minWidth + 1) + minWidth);
+    console.log('limite:' + myGameArea.limR);
+
     let posX = Math.floor(Math.random() * (maxWidth - minWidth + 1) + minWidth);
+
+    console.log(posX);
     //let minGap = 70;
     //let maxGap = 150;
     //let gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
