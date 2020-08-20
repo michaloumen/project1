@@ -23,7 +23,7 @@ body {
   
   body button {
     font-size: 30px;
-    background-color: blue;
+    background-color: rgb(55,27,146);
     color: #fff;
     padding: 20px 40px;
     border: 0;
@@ -39,4 +39,33 @@ body {
   
   #mission{
     vertical-align: middle;
+    border: 2px solid rgb(55,27,146) ;
+    display: flex;
+    flex-direction: column;
+    /*align-items: center;
+    align-content: center;*/
+    justify-content: center;
+    align-items: center;
+  }
+
+  #title {
+    background-color: rgb(55,27,146);
+    color: white;
+    padding: 20px 50px;
+    margin-top: 0px;
+  }
+
+  .itens{
+    padding: 5px 30px;
+    color: rgb(55,27,146);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /*border: 1px solid red;*/
+
+  }
+
+  .itens p{
+    padding-right: 30px; 
+    /*border: 1px solid black;*/
   }

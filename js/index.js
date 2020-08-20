@@ -1,6 +1,6 @@
 //const meuCarro = {posx: 0, posy: 0};
 //statusGame: E - Executando / P - Parado
-const myGameArea = {frames: 0, heigth: 700, lastObst: 'S', lastBack: '0', statusGame: 'E', sumHeli: 0, sumShip: 0, maxHeli: 10, maxShip: 10};
+const myGameArea = {frames: 0, width: 500, heigth: 700, lastObst: 'S', lastBack: '1', statusGame: 'E', sumHeli: 0, sumShip: 0, maxHeli: 20, maxShip: 20, limL: 50, limR: 50};
 
 const myPlane = {img: 'images/plane.png', width: 50, height: 100, posX: 225, posY: 590, fuel: 5000, speed: 4, maxFuel: 5000};
 const myTank = {img: 'images/tank.png', width: 20, height: 30, posX: 430, posY: 0};
@@ -11,8 +11,15 @@ const myShipL = {img: 'images/shipL.png', width: 75, height: 45, posX: 0, posY: 
 
 const myFire =  {img: 'images/fire.png', width: 50, height: 103, posX: 0, posY: 0};
 //const myShip = {img: 'images/tank.png', width: 20, height: 30, posX: 430, posY: 0};
+
 let imgGameOver = new Image();
 imgGameOver.src = 'images/gameover.png';
+
+//Atualiza os dados da missão no html
+let maxShipCss = document.getElementById('maxShip');
+let maxHeliCss = document.getElementById('maxHeli');
+maxShipCss.innerText = myGameArea.maxShip;
+maxHeliCss.innerText = myGameArea.maxHeli;
 
 let imgGameWin = new Image();
 imgGameWin.src = 'images/winner.png';
@@ -36,6 +43,8 @@ imageRoad3.src = 'images/road3.png'; //500 x 700
 let imageRoad4 = new Image();
 imageRoad4.src = 'images/road4.png'; //500 x 700
 
+let imageAtual = imageRoad;
+let imageNext = imageRoad2;
 
 let imgTank = new Image();
 imgTank.src = myTank.img;
@@ -81,20 +90,9 @@ class Component {
     this.img = img;
     this.typeObj = typeObj;
 
-    // // new speed properties
-    // this.speedX = 0;
-    // this.speedY = 0;  
   }
 
-  // newPos() {
-  //   this.x += this.speedX;
-  //   this.y += this.speedY;
-  // }
-
   update() {
-    //const ctx = myGameArea.context;
-    //ctx.fillStyle = this.color;
-    //ctx.fillRect(this.x, this.y, this.width, this.height);
 
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
   }
@@ -112,9 +110,6 @@ class Component {
     return this.y + this.height;
   }
 
-//   crashWith(obstacle) {
-//     return !(this.bottom() < obstacle.top() || this.top() > obstacle.bottom() || this.right() < obstacle.left() || this.left() > obstacle.right());
-//   }  
 };
 
 class Crush extends Component {
@@ -139,8 +134,8 @@ window.onload = () => {
 
     ctx = document.getElementById('canvas').getContext('2d');
 
-    ctx.drawImage(imageRoad, 0, 0, 500, 700);
-    ctx.drawImage(imageRoad2, 0, 700, 500, 700);
+    //ctx.drawImage(imageRoad, 0, 0, 500, 700);
+    //ctx.drawImage(imageRoad2, 0, 700, 500, 700);
 
     //ctx.drawImage(imgPlane, meuCarro.posx, meuCarro.posy,41, 55);
     //ctx.drawImage(imgPlane, meuCarro.posx, meuCarro.posy,50, 29);
@@ -161,16 +156,50 @@ function atualizaDados(){
   
   posyPista += 1;
 
-  // if (myGameArea.lastBack==='1'){
-  //   ctx.drawImage(imageRoad2, 0, posyPista, 500, 700);
-  //   ctx.drawImage(imageRoad2, 0, posyPista-700, 500, 700);  
-  // }else {
-    ctx.drawImage(imageRoad, 0, posyPista, 500, 700);
-    ctx.drawImage(imageRoad, 0, posyPista-700, 500, 700);
-  // }
-
+  //ctx.drawImage(imageRoad, 0, posyPista, 500, 700);
+  //ctx.drawImage(imageRoad, 0, posyPista-700, 500, 700);
+  ctx.drawImage(imageAtual, 0, posyPista, 500, 700);
+  ctx.drawImage(imageNext, 0, posyPista-700, 500, 700);
 
   if (posyPista>700){
+    switch (myGameArea.lastBack) {
+      case '0': 
+        imageAtual = imageRoad;
+        imageNext = imageRoad2;
+        myGameArea.lastBack = '1';
+        myGameArea.limL = 50; 
+        myGameArea.limR = 50; 
+        break;
+      case '1': 
+        imageAtual = imageRoad2;
+        imageNext = imageRoad3;
+        myGameArea.lastBack = '2';
+        myGameArea.limL = 150; 
+        myGameArea.limR = 150; 
+        break;
+      case '2': 
+        imageAtual = imageRoad3;
+        imageNext = imageRoad4;
+        myGameArea.lastBack = '3';
+        myGameArea.limL = 150; 
+        myGameArea.limR = 150; 
+        break;
+      case '3':
+        imageAtual = imageRoad4;
+        imageNext = imageRoad;
+        myGameArea.lastBack = '0';
+        myGameArea.limL = 50; 
+        myGameArea.limR = 50; 
+        break;
+      // case '4':
+      //   imageAtual = imageRoad4;
+      //   imageNext = imageRoad;
+      //   myGameArea.lastBack = '1';
+      //   break;
+  
+    }
+    console.log('lastback'+myGameArea.lastBack);
+  
     posyPista = 0;
   }
 
@@ -362,16 +391,10 @@ function updateFire(){
     for (i = 0; i < myFires.length; i++) {
         //Varre os obstaculos para saber se estão na mesma posição x e y do fire
         for (j = 0; j < myObstacles.length; j++) {
-          //myObstacles[i].y += 1;
-          //myObstacles[i].update();
           //se o y estiver na mesma coordenada verifica a posição x se está dentro do objeto
           crushObj = false;
           if (myObstacles[j].y >= (myFires[i].y-myFires[i].height+50)){
-            //if (myObstacles[j].x === myFires[i].x){
-            //console.log('igual y');
             if ((myFires[i].x+20)  >= myObstacles[j].x  && myFires[i].x+30  <= (myObstacles[j].x + myObstacles[j].width)){
-
-              //console.log('colidiu');
               crushObj = true; 
             }
           }
@@ -396,31 +419,10 @@ function updateFire(){
 
             myObstacles.splice(j,1);
             myFires.splice(i,1);
-            
-            //console.log('Total Ship:'+myGameArea.sumShip);
-            //console.log('Total Heli:'+myGameArea.sumHeli);
-            
-            //myCrush[0].update();
-            //console.log('colidiu');
+
           }
         }  
-    }      
-    
-    // for(i=0; i<myCrush.length;i++){
-    //   if (myCrush[i].cont <= 20){
-    //     myCrush[i].y += 1;
-    //     myCrush[i].update(); 
-    //     myCrush[i].cont += 1;
-    //   }else {
-    //     if (myCrush[i].indexObj > -1){
-    //       myObstacles.splice(myCrush[i].indexObj,1);
-    //       myCrush[i].indexObj = -1;
-    //       myFires.splice(myCrush[i].indexFire,1);
-    //     }
-    //     //myCrush[i].cont = 0;
-    //   }
-    // }
-
+    }         
 }
 
 function updateObstacles() {
@@ -465,8 +467,10 @@ document.addEventListener('keydown', (e) => {
         //   player.speedX = 0;
         //   return ;
         // }
-        myPlane.posX -= myPlane.speed;
-        atualizaDados();
+        if (myPlane.posX >= myGameArea.limL){
+          myPlane.posX -= myPlane.speed;
+          atualizaDados();
+        }
         break;
       case 39: // right arrow
         // if (player.x >= 450){
@@ -474,8 +478,10 @@ document.addEventListener('keydown', (e) => {
         //   player.speedX = 0;
         //   return;
         // }
-        myPlane.posX += myPlane.speed;
-        atualizaDados();
+        if (myPlane.posX <= (myGameArea.width - myPlane.width - myGameArea.limR)){
+          myPlane.posX += myPlane.speed;
+          atualizaDados();
+        }
         break;
       case 32: //space bar
           //console.log(e.keyCode);
