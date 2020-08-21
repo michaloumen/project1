@@ -8,6 +8,7 @@ const myHeliR = {img: 'images/heliR.png', width: 75, height: 75, posX: 430, posY
 const myHeliL = {img: 'images/heliL.png', width: 75, height: 75, posX: 430, posY: 0};
 const myShipR = {img: 'images/shipR.png', width: 75, height: 45, posX: 0, posY: 0};
 const myShipL = {img: 'images/shipL.png', width: 75, height: 45, posX: 0, posY: 0};
+const mySpaceShip =  {img: 'images/spaceship.png', width: 100, height: 63, posX: 0, posY: -2100, life: 10, direction: 'L', show: true};
 
 const myFire =  {img: 'images/fire.png', width: 50, height: 103, posX: 0, posY: 0};
 //const myShip = {img: 'images/tank.png', width: 20, height: 30, posX: 430, posY: 0};
@@ -69,6 +70,9 @@ imgFire.src = myFire.img;
 
 let imgExplosion = new Image();
 imgExplosion.src = myExplosion.img;
+
+let imgSpaceShip = new Image();
+imgSpaceShip.src = mySpaceShip.img;
 
 let ctx = {};
 
@@ -198,7 +202,7 @@ function atualizaDados(){
       //   break;
   
     }
-    console.log('lastback'+myGameArea.lastBack);
+    //console.log('lastback'+myGameArea.lastBack);
   
     posyPista = 0;
   }
@@ -212,6 +216,8 @@ function updateGameArea(){
 
   updateObstacles(); 
 
+  updateSpaceShip();
+
   updateFire();
 
   updateCrush();
@@ -223,6 +229,41 @@ function updateGameArea(){
   updatePlaneCrush();
 
   updateScore();
+
+}
+
+function updateSpaceShip(){
+
+  // if (myGameArea.frames % 360 === 0) {
+    
+  // }
+  if (mySpaceShip.show){
+
+    ctx.drawImage(imgSpaceShip, mySpaceShip.posX, mySpaceShip.posY, mySpaceShip.width, mySpaceShip.height);
+
+    mySpaceShip.posY += 2;
+    
+    if (mySpaceShip.direction==='L'){
+      mySpaceShip.posX += 2;
+      if (mySpaceShip.posX>=350){
+        mySpaceShip.direction='R';
+      }
+    }else {
+      mySpaceShip.posX -= 2;
+      if (mySpaceShip.posX<=50){
+        mySpaceShip.direction='L';
+      }
+    }
+
+    if (mySpaceShip.posY >3000){
+      mySpaceShip.posY = 0;
+      mySpaceShip.posX = 0;
+    }
+  }else {
+    mySpaceShip.posY = 900;
+    mySpaceShip.posX = 600;
+  }
+
 }
 
 function updateScore(){
@@ -395,10 +436,6 @@ function updateFire(){
           //se o y estiver na mesma coordenada verifica a posição x se está dentro do objeto
           crushObj = false;
 
-          // if (myFires[i].y === undefined ){
-          //   console.log('myfires' + myFires[i]);
-          // }
-
           if (myObstacles[j].y >= (myFires[i].y-myFires[i].height+50)){
             if ((myFires[i].x+20)  >= myObstacles[j].x  && myFires[i].x+30  <= (myObstacles[j].x + myObstacles[j].width)){
               crushObj = true; 
@@ -406,7 +443,7 @@ function updateFire(){
           }
 
           if (!crushObj){
-            if (myFires[i].y > 0){
+            if (myFires[i].y >= 0){
               myFires[i].y -= 1;
               myFires[i].update();    
             }else {
@@ -427,7 +464,26 @@ function updateFire(){
             myFires.splice(i,1);
 
           }
-        }  
+        } 
+
+        //verifica se bateu na spaceship
+        crushObj = false;
+
+        if (mySpaceShip.posY >= (myFires[i].y-myFires[i].height+63) && mySpaceShip.posY < 700 && mySpaceShip.posY){
+          if ((myFires[i].x+20)  >= mySpaceShip.posX  && myFires[i].x+30  <= (mySpaceShip.posX + 100)){
+            //console.log('bateu nave');
+            mySpaceShip.life -= 1;
+
+            myCrush.push(new Crush(myExplosion.width, myExplosion.height, mySpaceShip.posX, mySpaceShip.posY, imgExplosion, 'E', 0, 0, i));
+            myFires.splice(i,1);
+            //console.log(mySpaceShip.life);
+
+            if (mySpaceShip.life<= 0){
+              mySpaceShip.show = false;
+            }
+          }
+        }
+
     }         
 }
 
@@ -442,11 +498,11 @@ function updateObstacles() {
     //let maxWidth = 380 (500 - 75- 50);
     let maxWidth = (myGameArea.width - 75 - myGameArea.limR);
     //let width = Math.floor(Math.random() * (maxWidth - minWidth + 1) + minWidth);
-    console.log('limite:' + myGameArea.limR);
+    //console.log('limite:' + myGameArea.limR);
 
     let posX = Math.floor(Math.random() * (maxWidth - minWidth + 1) + minWidth);
 
-    console.log(posX);
+    //console.log(posX);
     //let minGap = 70;
     //let maxGap = 150;
     //let gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
@@ -500,10 +556,10 @@ document.addEventListener('keydown', (e) => {
           //console.log(e.keyCode);
           myFires.push(new Component(myFire.width, myFire.height, myPlane.posX, myPlane.posY-100, imgFire, 'F'));
           break;
-      case 84:
-        console.log('teste');
-        interval = setInterval(updateGameArea, 10);
-        break;
+      // case 84:
+      //   //console.log('teste');
+      //   interval = setInterval(updateGameArea, 10);
+      //   break;
     }
   }
 });
