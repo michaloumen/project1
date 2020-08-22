@@ -2,19 +2,19 @@
 //statusGame: E - Executando / P - Parado
 const myGameArea = {frames: 0, width: 500, heigth: 700, lastObst: 'S', lastBack: '1', statusGame: 'E', sumHeli: 0, sumShip: 0, maxHeli: 20, maxShip: 20, limL: 50, limR: 50};
 
-const myPlane = {img: 'images/plane.png', width: 50, height: 100, posX: 225, posY: 590, fuel: 5000, speed: 4, maxFuel: 5000};
-const myTank = {img: 'images/tank.png', width: 20, height: 30, posX: 430, posY: 0};
-const myHeliR = {img: 'images/heliR.png', width: 75, height: 75, posX: 430, posY: 0};
-const myHeliL = {img: 'images/heliL.png', width: 75, height: 75, posX: 430, posY: 0};
-const myShipR = {img: 'images/shipR.png', width: 75, height: 45, posX: 0, posY: 0};
-const myShipL = {img: 'images/shipL.png', width: 75, height: 45, posX: 0, posY: 0};
-const mySpaceShip =  {img: 'images/spaceship.png', width: 100, height: 63, posX: 0, posY: -2100, life: 10, direction: 'L', show: true};
+const myPlane = {img: 'src/images/plane.png', width: 50, height: 100, posX: 225, posY: 590, fuel: 5000, speed: 4, maxFuel: 5000};
+const myTank = {img: 'src/images/tank.png', width: 20, height: 30, posX: 430, posY: 0};
+const myHeliR = {img: 'src/images/heliR.png', width: 75, height: 75, posX: 430, posY: 0};
+const myHeliL = {img: 'src/images/heliL.png', width: 75, height: 75, posX: 430, posY: 0};
+const myShipR = {img: 'src/images/shipR.png', width: 75, height: 45, posX: 0, posY: 0};
+const myShipL = {img: 'src/images/shipL.png', width: 75, height: 45, posX: 0, posY: 0};
+const mySpaceShip =  {img: 'src/images/spaceship.png', width: 100, height: 63, posX: 0, posY: -2100, life: 10, direction: 'L', show: true};
 
-const myFire =  {img: 'images/fire.png', width: 50, height: 103, posX: 0, posY: 0};
-//const myShip = {img: 'images/tank.png', width: 20, height: 30, posX: 430, posY: 0};
+const myFire =  {img: 'src/images/fire.png', width: 50, height: 103, posX: 0, posY: 0};
+//const myShip = {img: 'src/images/tank.png', width: 20, height: 30, posX: 430, posY: 0};
 
 let imgGameOver = new Image();
-imgGameOver.src = 'images/gameover.png';
+imgGameOver.src = 'src/images/gameover.png';
 
 //Atualiza os dados da missão no html
 let maxShipCss = document.getElementById('maxShip');
@@ -23,9 +23,9 @@ maxShipCss.innerText = myGameArea.maxShip;
 maxHeliCss.innerText = myGameArea.maxHeli;
 
 let imgGameWin = new Image();
-imgGameWin.src = 'images/winner.png';
+imgGameWin.src = 'src/images/winner.png';
 
-const myExplosion =  {img: 'images/explosion.png', width: 50, height: 70, posX: 0, posY: 0};
+const myExplosion =  {img: 'src/images/explosion.png', width: 50, height: 70, posX: 0, posY: 0};
 //meuCarro.posx = 225;
 //meuCarro.posy = 590;
 
@@ -33,16 +33,16 @@ let posyPista = 0;
 let intervaloTank = Math.floor(Math.random() * (3000 - 1000 + 1) + 1000);
 //const ctx = {};
 let imageRoad = new Image();
-imageRoad.src = 'images/road.png'; //500 x 700
+imageRoad.src = 'src/images/road.png'; //500 x 700
 
 let imageRoad2 = new Image();
-imageRoad2.src = 'images/road2.png'; //500 x 700
+imageRoad2.src = 'src/images/road2.png'; //500 x 700
 
 let imageRoad3 = new Image();
-imageRoad3.src = 'images/road3.png'; //500 x 700
+imageRoad3.src = 'src/images/road3.png'; //500 x 700
 
 let imageRoad4 = new Image();
-imageRoad4.src = 'images/road4.png'; //500 x 700
+imageRoad4.src = 'src/images/road4.png'; //500 x 700
 
 let imageAtual = imageRoad;
 let imageNext = imageRoad2;
