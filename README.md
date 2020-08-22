@@ -1,5 +1,5 @@
 # Game River Raid
-![alt text](https://github.com/ramunizbh/project1/blob/master/src/images/river.png?raw=true)
+![alt text](https://github.com/ramunizbh/project1/blob/master/src/images/river2.png?raw=true)
 
 ### O QUE É
 Um jogo para computador baseado no famoso jogo River Raid do vídeo game Atari.
