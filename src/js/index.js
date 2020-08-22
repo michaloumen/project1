@@ -2,7 +2,7 @@
 //statusGame: E - Executando / P - Parado
 const myGameArea = {frames: 0, width: 500, heigth: 700, lastObst: 'S', lastBack: '1', statusGame: 'E', sumHeli: 0, sumShip: 0, maxHeli: 20, maxShip: 20, limL: 50, limR: 50};
 
-const myPlane = {img: 'src/images/plane.png', width: 50, height: 100, posX: 225, posY: 590, fuel: 2000, speed: 4, maxFuel: 5000};
+const myPlane = {img: 'src/images/plane.png', width: 50, height: 100, posX: 225, posY: 590, fuel: 3500, speed: 4, maxFuel: 5000};
 const myTank = {img: 'src/images/tank.png', width: 20, height: 30, posX: 430, posY: 0};
 const myHeliR = {img: 'src/images/heliR.png', width: 75, height: 75, posX: 430, posY: 0};
 const myHeliL = {img: 'src/images/heliL.png', width: 75, height: 75, posX: 430, posY: 0};
