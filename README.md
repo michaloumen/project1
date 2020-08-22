@@ -12,6 +12,7 @@ Este projeto é mantido sob o domínio público. O objetivo deste documento é f
 
 ### Regras do Jogo
 Convenções adotadas no game para ganhar ou perder:
+* Para começar o jogo clique o botão **'StarGame'**
 * Para mover o avião use as teclas das setas para **esquerda** e **direita**
 * Para atirar pressione a **barra de espaço**
 * **Para Ganhar:**
@@ -31,10 +32,10 @@ Convenções adotadas no game para ganhar ou perder:
 ----------------------------
 
 #### SE VOCÊ CHEGOU ATÉ AQUI
-Muito obrigado pela atenção
+Muito obrigado pela atenção!!
 
 #### SOBRE O AUTORR
 Rodrigo Muniz
 ramunizbh@yahoo.com.br
+linked-in: www.linkedin.com/in/rodrigoamuniz
 Idéias? Sempre aberto! Manda um e-mail!!
-
