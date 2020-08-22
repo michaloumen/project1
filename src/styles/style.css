@@ -56,13 +56,17 @@ body {
   }
 
   .itens{
-    padding: 5px 30px;
+    padding: 15px 30px;
     color: rgb(55,27,146);
     display: flex;
     justify-content: center;
     align-items: center;
     /*border: 1px solid red;*/
 
+  }
+
+  .itens img{
+    margin-right: 20px;
   }
 
   .itens p{
